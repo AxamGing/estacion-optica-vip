@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-eo-primary: #106AA5;
+  --color-eo-accent: #046A80;
+  --color-eo-dark: #1A1C1E;
+  --color-eo-light: #F8FAFC;
+  --color-eo-secondary: #64748B;
+
+  --font-outfit: "Outfit", sans-serif;
+  --font-inter: "Inter", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-inter text-eo-dark bg-eo-light;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-outfit;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-gray-100;
+  }
+
+  .btn-primary {
+    @apply bg-eo-primary text-white font-bold px-6 py-3 rounded-xl hover:bg-eo-accent transition duration-300;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-eo-primary font-bold px-6 py-3 rounded-xl border-2 border-eo-primary hover:bg-eo-primary hover:text-white transition duration-300;
+  }
+}
+
+@layer utilities {
+  .animate-soft {
+    animation: softFade 0.8s ease-out forwards;
+  }
+
+  @keyframes softFade {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .bg-animated-professional {
+    background: linear-gradient(-45deg, #106AA510, #046A8010, #0582CA10, #ffffff);
+    background-size: 400% 400%;
+    animation: bgMove 15s ease infinite;
+  }
+
+  @keyframes bgMove {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
