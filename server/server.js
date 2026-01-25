@@ -7,6 +7,7 @@ const connectDB = require('./src/config/database')
 const productRoutes = require('./src/routes/products')
 const orderRoutes = require('./src/routes/orders')
 const authRoutes = require('./src/routes/auth')
+const contentRoutes = require('./src/routes/contentRoutes')
 const Admin = require('./src/models/Admin')
 
 // Initialize app
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 app.use('/api/products', productRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/auth', authRoutes)
+app.use('/api/content', contentRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {

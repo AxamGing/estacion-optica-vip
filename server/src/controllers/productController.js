@@ -5,11 +5,28 @@ const Product = require('../models/Product')
 // @access  Public
 const getProducts = async (req, res) => {
     try {
-        const { category, featured } = req.query
+        const { category, featured, gender, search, minPrice, maxPrice } = req.query
         const filter = {}
 
         if (category) filter.category = category
+        if (gender) filter.gender = gender
         if (featured) filter.featured = featured === 'true'
+
+        // Price Filter
+        if (minPrice || maxPrice) {
+            filter.price = {}
+            if (minPrice) filter.price.$gte = Number(minPrice)
+            if (maxPrice) filter.price.$lte = Number(maxPrice)
+        }
+
+        // Search Filter (Name or Description)
+        if (search) {
+            const searchRegex = new RegExp(search, 'i')
+            filter.$or = [
+                { name: searchRegex },
+                { description: searchRegex }
+            ]
+        }
 
         const products = await Product.find(filter).sort({ createdAt: -1 })
         res.json(products)

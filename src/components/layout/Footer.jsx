@@ -17,22 +17,46 @@ const Footer = () => {
                             Comprometidos con la salud visual de nuestros pacientes en Maracay,
                             brindando atención de calidad y monturas de alta gama.
                         </p>
-                        <div className="flex space-x-4">
+                        <div className="flex space-x-3">
                             <a
                                 href="https://www.instagram.com/estacion_optica_/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-eo-primary transition duration-300"
+                                className="w-10 h-10 rounded-lg bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 flex items-center justify-center hover:scale-110 transition duration-300 shadow-lg"
+                                aria-label="Instagram"
                             >
-                                <Instagram size={16} />
+                                <Instagram size={20} className="text-white" />
+                            </a>
+                            <a
+                                href="https://www.tiktok.com/@estacion_opticavenezuela"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-lg bg-black flex items-center justify-center hover:scale-110 transition duration-300 shadow-lg border border-gray-800"
+                                aria-label="TikTok"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="text-white"
+                                >
+                                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                                </svg>
                             </a>
                             <a
                                 href="https://wa.me/584247448728"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-eo-primary transition duration-300"
+                                className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center hover:scale-110 transition duration-300 shadow-lg"
+                                aria-label="WhatsApp"
                             >
-                                <MessageCircle size={16} />
+                                <MessageCircle size={20} className="text-white" />
                             </a>
                         </div>
                     </div>

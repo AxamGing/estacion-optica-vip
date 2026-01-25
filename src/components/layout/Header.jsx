@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false)
@@ -15,11 +16,11 @@ const Header = () => {
     }, [])
 
     const navLinks = [
-        { href: '#inicio', label: 'Inicio' },
-        { href: '#servicios', label: 'Servicios' },
-        { href: '#galeria', label: 'Monturas' },
-        { href: '#nosotros', label: 'Nosotros' },
-        { href: '#contacto', label: 'Contacto' },
+        { to: '/', label: 'Inicio' },
+        { to: '/catalogo', label: 'Catálogo' },
+        { to: '/catalogo?category=monturas', label: 'Monturas' },
+        { to: '/#nosotros', label: 'Nosotros' }, // Anchors on home require hashed routing or scroll handling, but for now strict links
+        { to: '/#contacto', label: 'Contacto' },
     ]
 
     return (
@@ -30,26 +31,26 @@ const Header = () => {
                     }`}>
                     {/* Logo */}
                     <div className="flex items-center">
-                        <a href="#inicio" className="flex items-center space-x-3">
+                        <Link to="/" className="flex items-center space-x-3">
                             <div className="w-10 h-10 bg-eo-primary rounded-lg flex items-center justify-center">
                                 <span className="text-white font-bold text-xl">EO</span>
                             </div>
                             <span className="font-outfit font-bold text-xl text-eo-dark">
                                 Estación Óptica
                             </span>
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
                         {navLinks.map((link) => (
-                            <a
-                                key={link.href}
-                                href={link.href}
+                            <Link
+                                key={link.label}
+                                to={link.to}
                                 className="text-eo-secondary hover:text-eo-primary font-medium transition duration-200"
                             >
                                 {link.label}
-                            </a>
+                            </Link>
                         ))}
                     </nav>
 

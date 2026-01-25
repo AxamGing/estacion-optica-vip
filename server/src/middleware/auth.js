@@ -27,4 +27,12 @@ const protect = async (req, res, next) => {
     }
 }
 
-module.exports = { protect }
+const admin = (req, res, next) => {
+    if (req.admin) {
+        next()
+    } else {
+        res.status(401).json({ message: 'No autorizado como administrador' })
+    }
+}
+
+module.exports = { protect, admin }

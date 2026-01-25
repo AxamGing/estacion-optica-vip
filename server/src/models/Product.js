@@ -11,6 +11,11 @@ const productSchema = new mongoose.Schema({
         enum: ['monturas', 'lentes', 'accesorios'],
         required: true
     },
+    gender: {
+        type: String,
+        enum: ['hombre', 'mujer', 'unisex', 'ninos'],
+        default: 'unisex'
+    },
     price: {
         type: Number,
         required: [true, 'El precio es requerido'],

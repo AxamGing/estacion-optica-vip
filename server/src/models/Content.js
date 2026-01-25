@@ -1,28 +1,21 @@
 const mongoose = require('mongoose')
 
 const contentSchema = new mongoose.Schema({
-    section: {
+    type: {
         type: String,
         required: true,
+        enum: ['hero', 'about', 'contact'],
         unique: true
     },
-    data: {
-        type: mongoose.Schema.Types.Mixed,
-        required: true
+    hero: {
+        title: { type: String, default: 'Expertos en Salud Visual' },
+        subtitle: { type: String, default: 'Tu próxima montura perfecta te espera.' },
+        image: { type: String, default: '' } // Base64 or URL
     },
     updatedAt: {
         type: Date,
         default: Date.now
-    },
-    updatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admin'
     }
-})
-
-contentSchema.pre('save', function (next) {
-    this.updatedAt = Date.now()
-    next()
 })
 
 module.exports = mongoose.model('Content', contentSchema)
