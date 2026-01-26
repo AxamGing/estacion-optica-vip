@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Header from '../components/layout/Header'
 import Footer from '../components/layout/Footer'
 import Hero from '../components/sections/Hero'
+import Gallery from '../components/sections/Gallery'
 import Services from '../components/sections/Services'
 import axios from 'axios'
 import { ArrowRight } from 'lucide-react'
@@ -73,9 +74,9 @@ const Home = () => {
             <Header />
             <main>
                 <Hero />
+                <Gallery />
 
                 {/* Dynamic Sections */}
-                <ProductSection title="Tendencias Recientes" products={sections.recent} link="/catalogo" />
                 <ProductSection title="Colección Damas" products={sections.damas} link="/catalogo?gender=mujer" />
                 <ProductSection title="Colección Caballeros" products={sections.caballeros} link="/catalogo?gender=hombre" />
 

@@ -10,9 +10,7 @@ const Footer = () => {
                 <div className="grid md:grid-cols-4 gap-12 border-b border-white/10 pb-12 mb-8">
                     {/* Brand Column */}
                     <div className="space-y-4">
-                        <div className="w-10 h-10 bg-eo-primary rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold text-xl">EO</span>
-                        </div>
+                        <img src="/logo.jpg" alt="Logo" className="w-12 h-12 object-contain rounded-lg" />
                         <p className="text-white/50 text-xs leading-relaxed">
                             Comprometidos con la salud visual de nuestros pacientes en Maracay,
                             brindando atención de calidad y monturas de alta gama.

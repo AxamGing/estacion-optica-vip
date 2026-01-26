@@ -32,16 +32,14 @@ const Header = () => {
                     {/* Logo */}
                     <div className="flex items-center">
                         <Link to="/" className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-eo-primary rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-xl">EO</span>
-                            </div>
+                            <img src="/logo.jpg" alt="Estación Óptica Logo" className="w-12 h-12 object-contain rounded-lg" />
                             <span className="font-outfit font-bold text-xl text-eo-dark">
                                 Estación Óptica
                             </span>
                         </Link>
                     </div>
 
-                    {/* Desktop Navigation */}
+                    {/* ... desktop navigation stays same ... */}
                     <nav className="hidden md:flex items-center space-x-8">
                         {navLinks.map((link) => (
                             <Link
@@ -54,7 +52,7 @@ const Header = () => {
                         ))}
                     </nav>
 
-                    {/* CTA Button */}
+                    {/* ... cta button stays same ... */}
                     <div className="hidden md:block">
                         <a
                             href="https://wa.me/584247448728"
@@ -88,14 +86,14 @@ const Header = () => {
                     >
                         <nav className="px-4 py-6 space-y-4">
                             {navLinks.map((link) => (
-                                <a
-                                    key={link.href}
-                                    href={link.href}
+                                <Link
+                                    key={link.label}
+                                    to={link.to}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="block text-eo-secondary hover:text-eo-primary font-medium transition duration-200"
                                 >
                                     {link.label}
-                                </a>
+                                </Link>
                             ))}
                             <a
                                 href="https://wa.me/584247448728"

@@ -1,31 +1,26 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { LayoutGrid } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 const Gallery = () => {
-    const products = [
-        {
-            id: 1,
-            name: 'Turquesa Elegante',
-            category: 'Línea Selecta',
-            price: 45,
-            image: 'https://m.media-amazon.com/images/I/51r2X7Wz2cL._AC_SL1200_.jpg',
-        },
-        {
-            id: 2,
-            name: 'Titanium Shadow',
-            category: 'Diseño Urbano',
-            price: 55,
-            image: 'https://m.media-amazon.com/images/I/61j8Rj7dK5L._AC_SL1500_.jpg',
-        },
-        {
-            id: 3,
-            name: 'Retro Master',
-            category: 'Clase Ejecutiva',
-            price: 120,
-            image: 'https://m.media-amazon.com/images/I/51XvLgE-kOL._AC_SL1001_.jpg',
-        },
-    ]
+    const [products, setProducts] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchFeatured = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/products?limit=3')
+                setProducts(response.data)
+            } catch (error) {
+                console.error('Error fetching featured products:', error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchFeatured()
+    }, [])
 
     return (
         <section id="galeria" className="py-24 bg-white relative overflow-hidden">
@@ -48,35 +43,51 @@ const Gallery = () => {
                 </motion.div>
 
                 {/* Products Grid */}
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-                    {products.map((product, index) => (
-                        <motion.div
-                            key={product.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="group relative"
-                        >
-                            <div className="relative overflow-hidden rounded-2xl bg-eo-light shadow-sm aspect-[4/5] border border-gray-100">
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover transform transition duration-500 group-hover:scale-105"
-                                />
+                {isLoading ? (
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8 animate-pulse">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="aspect-[4/5] bg-gray-100 rounded-2xl"></div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+                        {products.length === 0 ? (
+                            <div className="col-span-full py-12 text-eo-secondary">
+                                Agrega productos en el panel para verlos aquí
                             </div>
-                            <div className="mt-4 flex justify-between items-end">
-                                <div className="text-left">
-                                    <p className="text-[10px] font-bold text-eo-secondary uppercase tracking-widest">
-                                        {product.category}
-                                    </p>
-                                    <h3 className="text-lg font-bold text-eo-dark">{product.name}</h3>
-                                </div>
-                                <span className="text-eo-primary font-bold text-xl">${product.price}</span>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                        ) : (
+                            products.map((product, index) => (
+                                <motion.div
+                                    key={product._id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="group relative"
+                                >
+                                    <div className="relative overflow-hidden rounded-2xl bg-eo-light shadow-sm aspect-[4/5] border border-gray-100">
+                                        {product.images && product.images[0] && (
+                                            <img
+                                                src={product.images[0]}
+                                                alt={product.name}
+                                                className="w-full h-full object-cover transform transition duration-500 group-hover:scale-105"
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="mt-4 flex justify-between items-end">
+                                        <div className="text-left">
+                                            <p className="text-[10px] font-bold text-eo-secondary uppercase tracking-widest">
+                                                {product.category}
+                                            </p>
+                                            <h3 className="text-lg font-bold text-eo-dark truncate w-40">{product.name}</h3>
+                                        </div>
+                                        <span className="text-eo-primary font-bold text-xl">${product.price}</span>
+                                    </div>
+                                </motion.div>
+                            ))
+                        )}
+                    </div>
+                )}
 
                 {/* CTA */}
                 <motion.div
@@ -85,15 +96,13 @@ const Gallery = () => {
                     viewport={{ once: true }}
                     className="mt-16"
                 >
-                    <a
-                        href="https://wa.me/584247448728"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <Link
+                        to="/catalogo"
                         className="inline-flex items-center justify-center px-8 py-3 bg-eo-primary text-white text-sm font-bold rounded-xl shadow hover:bg-eo-secondary transition duration-300 uppercase tracking-widest"
                     >
                         <LayoutGrid className="w-4 h-4 mr-2" />
                         Ver Catálogo Completo
-                    </a>
+                    </Link>
                 </motion.div>
             </div>
 
