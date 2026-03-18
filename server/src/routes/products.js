@@ -5,9 +5,11 @@ const {
     getProductById,
     createProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    uploadImage
 } = require('../controllers/productController')
 const { protect } = require('../middleware/auth')
+const { upload } = require('../config/cloudinary')
 
 // Public routes
 router.get('/', getProducts)
@@ -17,5 +19,6 @@ router.get('/:id', getProductById)
 router.post('/', protect, createProduct)
 router.put('/:id', protect, updateProduct)
 router.delete('/:id', protect, deleteProduct)
+router.post('/upload-image', protect, upload.single('image'), uploadImage)
 
 module.exports = router

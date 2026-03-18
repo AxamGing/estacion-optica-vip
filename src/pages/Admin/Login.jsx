@@ -23,7 +23,7 @@ const Login = () => {
                 email: 'admin@estacionoptica.com',
                 password: formData.password
             }
-            const response = await axios.post('http://localhost:5000/api/auth/login', payload)
+            const response = await axios.post('/api/auth/login', payload)
             localStorage.setItem('token', response.data.token)
             localStorage.setItem('admin', JSON.stringify(response.data))
             navigate('/admin/dashboard')

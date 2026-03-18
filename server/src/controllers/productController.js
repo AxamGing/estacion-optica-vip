@@ -102,10 +102,25 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+// @desc    Upload product image
+// @route   POST /api/products/upload-image
+// @access  Private (Admin)
+const uploadImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'Por favor sube una imagen' });
+        }
+        res.json({ imageUrl: req.file.path });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
     createProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    uploadImage
 }

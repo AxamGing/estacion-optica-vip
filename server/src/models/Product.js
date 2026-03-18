@@ -6,6 +6,10 @@ const productSchema = new mongoose.Schema({
         required: [true, 'El nombre del producto es requerido'],
         trim: true
     },
+    brand: {
+        type: String,
+        trim: true
+    },
     category: {
         type: String,
         enum: ['monturas', 'lentes', 'accesorios'],
@@ -18,15 +22,19 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: [true, 'El precio es requerido'],
+        default: 0,
         min: 0
     },
     description: {
         type: String,
         trim: true
     },
+    colors: [{
+        name: String,   // i.e., "Marrón Carey"
+        hex: String     // i.e., "#8b4513"
+    }],
     images: [{
-        type: String  // Base64 or URL
+        type: String  // URL from Cloudinary
     }],
     stock: {
         type: Number,
@@ -36,12 +44,6 @@ const productSchema = new mongoose.Schema({
     featured: {
         type: Boolean,
         default: false
-    },
-    specifications: {
-        material: String,
-        color: String,
-        size: String,
-        brand: String
     },
     createdAt: {
         type: Date,
@@ -53,7 +55,6 @@ const productSchema = new mongoose.Schema({
     }
 })
 
-// Update timestamp on save
 // Update timestamp on save
 productSchema.pre('save', function () {
     this.updatedAt = Date.now()

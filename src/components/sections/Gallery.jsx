@@ -11,7 +11,7 @@ const Gallery = () => {
     useEffect(() => {
         const fetchFeatured = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/products?limit=3')
+                const response = await axios.get('/api/products?limit=3')
                 setProducts(response.data)
             } catch (error) {
                 console.error('Error fetching featured products:', error)

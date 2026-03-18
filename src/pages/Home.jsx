@@ -21,18 +21,18 @@ const ProductSection = ({ title, products, link }) => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {products.slice(0, 4).map(product => (
-                        <div key={product._id} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition group">
+                        <Link key={product._id} to={`/producto/${product._id}`} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition group block">
                             <div className="h-64 bg-gray-100 relative overflow-hidden">
                                 {product.images[0] && (
                                     <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                                 )}
                             </div>
-                            <div className="p-4">
+                            <div className="p-4 flex flex-col items-start text-left">
                                 <p className="text-xs text-gray-500 mb-1 capitalize">{product.category}</p>
-                                <h3 className="font-bold text-lg mb-2 truncate">{product.name}</h3>
+                                <h3 className="font-bold text-lg mb-2 truncate group-hover:text-eo-primary transition">{product.name}</h3>
                                 <p className="text-xl font-bold text-eo-primary">${product.price}</p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -52,9 +52,9 @@ const Home = () => {
             try {
                 // Fetch in parallel
                 const [damasRes, caballerosRes, recentRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/products?gender=mujer'),
-                    axios.get('http://localhost:5000/api/products?gender=hombre'),
-                    axios.get('http://localhost:5000/api/products?limit=8') // Just taking recent ones
+                    axios.get('/api/products?gender=mujer'),
+                    axios.get('/api/products?gender=hombre'),
+                    axios.get('/api/products?limit=8') // Just taking recent ones
                 ])
 
                 setSections({

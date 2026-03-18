@@ -13,7 +13,7 @@ const Hero = () => {
     useEffect(() => {
         const fetchContent = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/content/hero')
+                const response = await axios.get('/api/content/hero')
                 if (response.data && response.data.hero) {
                     setContent({
                         title: response.data.hero.title || content.title,
