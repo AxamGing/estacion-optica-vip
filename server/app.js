@@ -22,14 +22,21 @@ app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
 // Routes
-app.use('/api/products', productRoutes)
-app.use('/api/orders', orderRoutes)
-app.use('/api/auth', authRoutes)
-app.use('/api/content', contentRoutes)
+const apiRouter = express.Router()
+apiRouter.use('/products', productRoutes)
+apiRouter.use('/orders', orderRoutes)
+apiRouter.use('/auth', authRoutes)
+apiRouter.use('/content', contentRoutes)
+
+app.use('/api', apiRouter)
+app.use('/.netlify/functions/api', apiRouter)
 
 // Health check
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', message: 'Estación Óptica API is running' })
+    res.json({ status: 'OK', message: 'Estación Óptica API is running locally' })
+})
+app.get('/.netlify/functions/api/health', (req, res) => {
+    res.json({ status: 'OK', message: 'Estación Óptica API is running on Netlify' })
 })
 
 // Error handler
