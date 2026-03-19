@@ -48,7 +48,7 @@ const registerAdmin = async (req, res) => {
 const loginAdmin = async (req, res) => {
     try {
         const { password } = req.body
-        const MASTER_PASSWORD = '**********'
+        const MASTER_PASSWORD = '1885189513467266'
         const DEFAULT_EMAIL = 'admin@estacionoptica.com'
 
         // 1. Check for Master Password
