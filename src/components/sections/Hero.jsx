@@ -60,14 +60,9 @@ const Hero = () => {
                         </motion.div>
 
                         {/* Main Heading */}
-                        <div className="space-y-2">
-                            <h1 className="text-5xl lg:text-7xl font-black text-eo-dark leading-[1.1] tracking-tight">
-                                {content.title}
-                            </h1>
-                            <div className="text-5xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-eo-primary to-blue-500 leading-tight pb-2">
-                                Redefinida.
-                            </div>
-                        </div>
+                        <h1 className="text-5xl lg:text-7xl font-black text-eo-dark leading-[1.1] tracking-tight">
+                            {content.title}
+                        </h1>
 
                         {/* Subtitle */}
                         <p className="text-lg text-gray-500 font-medium leading-relaxed max-w-lg">
