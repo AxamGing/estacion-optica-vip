@@ -4,6 +4,8 @@ import Footer from '../components/layout/Footer'
 import Hero from '../components/sections/Hero'
 import Gallery from '../components/sections/Gallery'
 import Services from '../components/sections/Services'
+import Nosotros from '../components/sections/Nosotros'
+import Contacto from '../components/sections/Contacto'
 import axios from 'axios'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -93,6 +95,10 @@ const Home = () => {
                 <ProductSection title="Colección Caballeros" products={sections.caballeros} link="/catalogo?gender=hombre" />
 
                 <Services />
+
+                {/* Nosotros y Contacto recuperados del sitio original */}
+                <Nosotros />
+                <Contacto />
             </main>
             <Footer />
         </div>
