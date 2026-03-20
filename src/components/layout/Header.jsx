@@ -39,28 +39,29 @@ const Header = () => {
                         </Link>
                     </div>
 
-                    {/* ... desktop navigation stays same ... */}
-                    <nav className="hidden md:flex items-center space-x-8">
+                    {/* Center Navigation */}
+                    <nav className="hidden md:flex items-center space-x-10">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.label}
                                 to={link.to}
-                                className="text-eo-secondary hover:text-eo-primary font-medium transition duration-200"
+                                className="group relative font-bold text-gray-600 hover:text-gray-900 transition-colors duration-300"
                             >
                                 {link.label}
+                                <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-gradient-to-r from-eo-primary to-blue-500 transition-all duration-300 group-hover:w-full rounded-full"></span>
                             </Link>
                         ))}
                     </nav>
 
-                    {/* ... cta button stays same ... */}
-                    <div className="hidden md:block">
+                    {/* Right CTA */}
+                    <div className="hidden md:flex items-center gap-4">
                         <a
                             href="https://wa.me/584247448728"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-primary"
+                            className="bg-gray-900 text-white font-black px-6 py-2.5 rounded-full hover:bg-eo-primary hover:shadow-lg hover:shadow-eo-primary/30 transition-all duration-300 transform hover:-translate-y-0.5"
                         >
-                            Agendar Cita
+                            Hablar con Asesor
                         </a>
                     </div>
 
@@ -84,13 +85,13 @@ const Header = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="md:hidden bg-white border-t border-gray-100"
                     >
-                        <nav className="px-4 py-6 space-y-4">
+                        <nav className="px-6 py-6 space-y-4">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.label}
                                     to={link.to}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block text-eo-secondary hover:text-eo-primary font-medium transition duration-200"
+                                    className="block font-bold text-lg text-gray-700 hover:text-eo-primary hover:pl-2 transition-all duration-200 border-b border-gray-50 pb-2"
                                 >
                                     {link.label}
                                 </Link>
@@ -99,9 +100,9 @@ const Header = () => {
                                 href="https://wa.me/584247448728"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block btn-primary text-center"
+                                className="block w-full bg-gray-900 text-white font-black py-4 rounded-xl text-center mt-6 hover:bg-eo-primary transition-colors"
                             >
-                                Agendar Cita
+                                Hablar con Asesor
                             </a>
                         </nav>
                     </motion.div>

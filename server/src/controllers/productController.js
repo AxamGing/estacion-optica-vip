@@ -129,6 +129,23 @@ const seedProducts = async (req, res) => {
     }
 }
 
+// @desc    Bulk Delete products
+// @route   POST /api/products/bulk-delete
+// @access  Private (Admin)
+const bulkDeleteProducts = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ message: 'No se proporcionaron IDs válidos para eliminar.' });
+        }
+        
+        await Product.deleteMany({ _id: { $in: ids } });
+        res.json({ message: `${ids.length} productos eliminados correctamente.` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
@@ -136,5 +153,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     uploadImage,
-    seedProducts
+    seedProducts,
+    bulkDeleteProducts
 }

@@ -3,7 +3,24 @@ import Header from '../components/layout/Header'
 import Footer from '../components/layout/Footer'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
-import { Search, Filter, X, ChevronRight, Tags } from 'lucide-react'
+import { Search, Filter, X, ChevronRight, Tags, SlidersHorizontal } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const SkeletonCard = () => (
+    <div className="bg-white rounded-[2rem] overflow-hidden border border-gray-100 animate-pulse flex flex-col h-full">
+        <div className="aspect-square bg-gray-100"></div>
+        <div className="p-6 flex flex-col flex-grow">
+            <div className="h-4 bg-gray-200 rounded-full w-1/4 mb-4"></div>
+            <div className="h-6 bg-gray-200 rounded-full w-3/4 mb-6"></div>
+            <div className="flex gap-2 mb-8">
+                <div className="w-6 h-6 rounded-full bg-gray-200"></div>
+                <div className="w-6 h-6 rounded-full bg-gray-200"></div>
+                <div className="w-6 h-6 rounded-full bg-gray-200"></div>
+            </div>
+            <div className="mt-auto h-8 bg-gray-200 rounded-full w-1/3"></div>
+        </div>
+    </div>
+);
 
 const Catalog = () => {
     const [products, setProducts] = useState([])
@@ -68,9 +85,9 @@ const Catalog = () => {
                         <div className="flex gap-2 md:hidden">
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="flex-1 flex items-center justify-center gap-2 bg-white text-eo-dark font-bold p-3 border-2 border-gray-200 rounded-xl shadow-sm"
+                                className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white font-bold p-3 rounded-xl shadow-lg hover:bg-eo-primary transition-colors"
                             >
-                                <Filter size={20} /> Filtros
+                                <SlidersHorizontal size={20} /> Filtros Rápidos
                             </button>
                         </div>
                     </div>
@@ -142,6 +159,40 @@ const Catalog = () => {
                                     </div>
                                 </div>
 
+                                {/* Price Range */}
+                                <div className="mb-8">
+                                    <h4 className="font-bold mb-4 text-eo-dark flex items-center gap-2">Rango de Precio</h4>
+                                    <div className="flex items-center gap-2">
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-2.5 text-gray-400 font-bold">$</span>
+                                            <input 
+                                                type="number" 
+                                                placeholder="Min" 
+                                                value={filters.minPrice}
+                                                onChange={(e) => setFilters(prev => ({...prev, minPrice: e.target.value}))}
+                                                className="w-full pl-8 pr-2 py-2.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-eo-primary outline-none font-bold text-sm"
+                                            />
+                                        </div>
+                                        <span className="text-gray-400 font-bold">-</span>
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-2.5 text-gray-400 font-bold">$</span>
+                                            <input 
+                                                type="number" 
+                                                placeholder="Max" 
+                                                value={filters.maxPrice}
+                                                onChange={(e) => setFilters(prev => ({...prev, maxPrice: e.target.value}))}
+                                                className="w-full pl-8 pr-2 py-2.5 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-eo-primary outline-none font-bold text-sm"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={fetchProducts}
+                                        className="w-full mt-3 bg-gray-900 text-white font-bold py-2.5 rounded-xl hover:bg-eo-primary transition shadow-md"
+                                    >
+                                        Aplicar Rango
+                                    </button>
+                                </div>
+
                                 {/* Brands (Dynamic if available) */}
                                 {uniqueBrands.length > 0 && (
                                     <div>
@@ -171,9 +222,8 @@ const Catalog = () => {
                             )}
 
                             {isLoading ? (
-                                <div className="text-center py-24">
-                                    <div className="animate-spin w-16 h-16 border-4 border-gray-200 border-t-eo-primary rounded-full mx-auto mb-6"></div>
-                                    <p className="text-gray-500 font-medium text-lg animate-pulse">Cargando la colección...</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+                                    {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
                                 </div>
                             ) : products.length === 0 ? (
                                 <div className="text-center py-24 bg-white rounded-3xl shadow-sm border border-gray-100">
@@ -187,83 +237,97 @@ const Catalog = () => {
                                     </button>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+                                <motion.div 
+                                    className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
+                                    initial="hidden"
+                                    animate="visible"
+                                    variants={{
+                                        visible: { transition: { staggerChildren: 0.1 } }
+                                    }}
+                                >
                                     {products.map(product => (
-                                        <Link 
-                                            key={product._id} 
-                                            to={`/producto/${product._id}`}
-                                            className="bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100 flex flex-col transform hover:-translate-y-1 block text-left"
+                                        <motion.div
+                                            key={product._id}
+                                            variants={{
+                                                hidden: { opacity: 0, y: 30 },
+                                                visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+                                            }}
                                         >
-                                            {/* Image Container */}
-                                            <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden flex items-center justify-center p-6">
-                                                {product.images && product.images[0] ? (
-                                                    <img
-                                                        src={product.images[0]}
-                                                        alt={product.name}
-                                                        className="w-full h-full object-contain group-hover:scale-110 transition duration-700 ease-out drop-shadow-md"
-                                                    />
-                                                ) : (
-                                                    <div className="text-gray-300 font-medium tracking-widest uppercase text-sm">Sin Foto</div>
-                                                )}
-                                                
-                                                {/* Brand Tag overlay */}
-                                                {product.brand && (
-                                                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-eo-dark shadow-sm border border-gray-100 flex items-center gap-1">
-                                                        <Tags size={12}/> {product.brand}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            
-                                            {/* Content */}
-                                            <div className="p-6 flex flex-col flex-grow">
-                                                <div className="mb-2">
-                                                    <span className="text-xs font-bold uppercase tracking-wider text-eo-secondary bg-eo-secondary/10 px-2 py-1 rounded-md">
-                                                        {product.gender === 'ninos' ? 'Niños' : product.gender === 'hombre' ? 'Caballeros' : product.gender === 'mujer' ? 'Damas' : 'Unisex'}
-                                                    </span>
-                                                </div>
-                                                
-                                                <h3 className="font-extrabold text-xl text-eo-dark mb-1 group-hover:text-eo-primary transition line-clamp-1">{product.name}</h3>
-                                                
-                                                {/* Colors visual display */}
-                                                <div className="mt-3 flex items-center gap-2">
-                                                    {product.colors && product.colors.length > 0 ? (
-                                                        <div className="flex -space-x-1.5">
-                                                            {product.colors.slice(0, 5).map((color, i) => (
-                                                                <div 
-                                                                    key={i} 
-                                                                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm ring-1 ring-gray-100"
-                                                                    style={{ backgroundColor: color.hex }}
-                                                                    title={color.name}
-                                                                />
-                                                            ))}
-                                                            {product.colors.length > 5 && (
-                                                                <div className="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500 z-10">
-                                                                    +{product.colors.length - 5}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                            <Link 
+                                                to={`/producto/${product._id}`}
+                                                className="bg-white rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100 flex flex-col h-full transform hover:-translate-y-2"
+                                            >
+                                                {/* Image Container */}
+                                                <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden flex items-center justify-center p-8">
+                                                    {product.images && product.images[0] ? (
+                                                        <img
+                                                            src={product.images[0]}
+                                                            alt={product.name}
+                                                            className="w-full h-full object-contain group-hover:scale-110 transition duration-700 ease-out drop-shadow-xl"
+                                                        />
                                                     ) : (
-                                                        <span className="text-xs text-gray-400">Variantes no especificadas</span>
+                                                        <div className="text-gray-300 font-black tracking-widest uppercase text-xs">Sin Foto</div>
+                                                    )}
+                                                    
+                                                    {/* Brand Tag overlay */}
+                                                    {product.brand && (
+                                                        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-black tracking-widest uppercase text-gray-900 shadow-sm border border-gray-100/50 flex items-center gap-1">
+                                                            <Tags size={12}/> {product.brand}
+                                                        </div>
                                                     )}
                                                 </div>
-
-                                                <div className="mt-auto pt-6 flex justify-between items-end">
-                                                    <div>
-                                                        <span className="text-sm text-gray-500 font-medium block">Precio desde</span>
-                                                        {product.price > 0 ? (
-                                                            <span className="text-2xl font-black text-eo-dark">${product.price.toLocaleString()}</span>
+                                                
+                                                {/* Content */}
+                                                <div className="p-6 flex flex-col flex-grow border-t border-gray-50">
+                                                    <div className="mb-2">
+                                                        <span className="text-xs font-bold uppercase tracking-wider text-eo-secondary bg-eo-secondary/10 px-2 py-1 rounded-md">
+                                                            {product.gender === 'ninos' ? 'Niños' : product.gender === 'hombre' ? 'Caballeros' : product.gender === 'mujer' ? 'Damas' : 'Unisex'}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <h3 className="font-extrabold text-2xl text-eo-dark mb-1 group-hover:text-eo-primary transition line-clamp-1">{product.name}</h3>
+                                                    
+                                                    {/* Colors visual display */}
+                                                    <div className="mt-3 flex items-center gap-2">
+                                                        {product.colors && product.colors.length > 0 ? (
+                                                            <div className="flex -space-x-1.5">
+                                                                {product.colors.slice(0, 5).map((color, i) => (
+                                                                    <div 
+                                                                        key={i} 
+                                                                        className="w-6 h-6 rounded-full border-2 border-white shadow-sm ring-1 ring-gray-100"
+                                                                        style={{ backgroundColor: color.hex }}
+                                                                        title={color.name}
+                                                                    />
+                                                                ))}
+                                                                {product.colors.length > 5 && (
+                                                                    <div className="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500 z-10">
+                                                                        +{product.colors.length - 5}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         ) : (
-                                                            <span className="text-xl font-bold text-white bg-eo-primary px-3 py-1 rounded-lg">Consultar</span>
+                                                            <span className="text-xs text-gray-400">Variantes no especificadas</span>
                                                         )}
                                                     </div>
-                                                    <div className="w-10 h-10 rounded-full bg-gray-50 group-hover:bg-eo-primary group-hover:text-white text-eo-dark flex items-center justify-center transition">
-                                                        <ChevronRight size={20} />
+
+                                                    <div className="mt-auto pt-8 flex justify-between items-end">
+                                                        <div>
+                                                            <span className="text-sm text-gray-500 font-medium block">Precio Mercado</span>
+                                                            {product.price > 0 ? (
+                                                                <span className="text-3xl font-black text-eo-dark">${product.price.toLocaleString()}</span>
+                                                            ) : (
+                                                                <span className="text-xl font-bold text-white bg-eo-primary px-3 py-1 rounded-lg">Consultar</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="w-12 h-12 rounded-full bg-gray-50 group-hover:bg-eo-primary group-hover:text-white text-eo-dark flex items-center justify-center transition shadow-sm">
+                                                            <ChevronRight size={24} />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </Link>
+                                            </Link>
+                                        </motion.div>
                                     ))}
-                                </div>
+                                </motion.div>
                             )}
                         </div>
                     </div>

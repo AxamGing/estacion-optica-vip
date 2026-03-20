@@ -6,11 +6,13 @@ import ProductDetail from './pages/ProductDetail'
 import About from './pages/About'
 import Login from './pages/Admin/Login'
 import Dashboard from './pages/Admin/Dashboard'
+import WhatsAppButton from './components/common/WhatsAppButton'
 
 
 function App() {
     return (
         <Router>
+            <WhatsAppButton />
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/catalogo" element={<Catalog />} />

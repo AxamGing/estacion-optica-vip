@@ -1,5 +1,6 @@
 import React from 'react'
 import { Instagram, MessageCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const Footer = () => {
     const currentYear = new Date().getFullYear()
@@ -66,24 +67,19 @@ const Footer = () => {
                         </h5>
                         <ul className="space-y-3 text-xs">
                             <li>
-                                <a href="#inicio" className="text-white/50 hover:text-white transition duration-200">
+                                <Link to="/" className="text-white/50 hover:text-white transition duration-200">
                                     Inicio
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#servicios" className="text-white/50 hover:text-white transition duration-200">
-                                    Servicios
-                                </a>
+                                <Link to="/catalogo" className="text-white/50 hover:text-white transition duration-200">
+                                    Colección de Lentes
+                                </Link>
                             </li>
                             <li>
-                                <a href="#galeria" className="text-white/50 hover:text-white transition duration-200">
-                                    Monturas
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#nosotros" className="text-white/50 hover:text-white transition duration-200">
+                                <Link to="/nosotros" className="text-white/50 hover:text-white transition duration-200">
                                     Sobre Nosotros
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>

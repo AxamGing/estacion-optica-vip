@@ -26,6 +26,7 @@ const Dashboard = () => {
     const [showAddProduct, setShowAddProduct] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
+    const [selectedIds, setSelectedIds] = useState([]);
 
     // Product Form State
     const [newProduct, setNewProduct] = useState({
@@ -93,11 +94,43 @@ const Dashboard = () => {
             const token = localStorage.getItem('token');
             await axios.delete(`/api/products/${deleteModal.id}`, { headers: { Authorization: `Bearer ${token}` } });
             toast.success('Producto aniquilado con éxito 🗑️');
+            setSelectedIds(prev => prev.filter(id => id !== deleteModal.id)); // Remove if selected
             fetchProducts();
         } catch (error) {
             toast.error('Error al eliminar producto');
         } finally {
             setDeleteModal({ show: false, id: null });
+        }
+    };
+
+    const toggleSelect = (id) => {
+        setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    };
+
+    const toggleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedIds(filteredProducts.map(p => p._id));
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const confirmBulkDelete = () => {
+        if(window.confirm(`¿Estás 100% seguro de destruir ${selectedIds.length} productos al mismo tiempo? Esta acción no se puede deshacer.`)) {
+            executeBulkDelete();
+        }
+    };
+
+    const executeBulkDelete = async () => {
+        const loadingToast = toast.loading('Calculando destrucción masiva... 💣');
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post('/api/products/bulk-delete', { ids: selectedIds }, { headers: { Authorization: `Bearer ${token}` } });
+            toast.update(loadingToast, { render: `¡${selectedIds.length} productos vaporizados! 💥`, type: "success", isLoading: false, autoClose: 3000 });
+            setSelectedIds([]);
+            fetchProducts();
+        } catch (error) {
+            toast.update(loadingToast, { render: 'Error al ejecutar la eliminación masiva', type: "error", isLoading: false, autoClose: 3000 });
         }
     };
 
@@ -333,8 +366,14 @@ const Dashboard = () => {
                                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                                         <input type="text" placeholder="Rastrear lente por nombre o marca..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-eo-primary outline-none transition font-medium" />
                                     </div>
-                                    <button onClick={() => {
-                                        const data = JSON.stringify(products, null, 2);
+                                    <div className="flex items-center gap-3">
+                                        {selectedIds.length > 0 && (
+                                            <motion.button initial={{opacity: 0, scale: 0.9}} animate={{opacity: 1, scale: 1}} onClick={confirmBulkDelete} className="flex items-center gap-2 bg-red-600 text-white px-5 py-3 rounded-xl font-black shadow-lg shadow-red-600/30 hover:bg-red-700 transition-all">
+                                                Eliminar {selectedIds.length} <Trash2 size={20} />
+                                            </motion.button>
+                                        )}
+                                        <button onClick={() => {
+                                            const data = JSON.stringify(products, null, 2);
                                         const blob = new Blob([data], {type: 'application/json'});
                                         const url = URL.createObjectURL(blob);
                                         const a = document.createElement('a');
@@ -344,13 +383,24 @@ const Dashboard = () => {
                                         <Download size={20} /> Base Datos Local
                                     </button>
                                 </div>
+                            </div>
 
-                                {/* Table */}
+                            {/* Table */}
                                 <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/20 overflow-hidden">
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left">
                                             <thead>
                                                 <tr className="bg-gray-50 border-b border-gray-100">
+                                                    <th className="p-5 w-10">
+                                                        <div className="flex items-center justify-center">
+                                                            <input 
+                                                                type="checkbox" 
+                                                                className="w-5 h-5 rounded border-gray-300 text-eo-primary focus:ring-eo-primary cursor-pointer accent-eo-primary"
+                                                                checked={selectedIds.length === filteredProducts.length && filteredProducts.length > 0}
+                                                                onChange={toggleSelectAll}
+                                                            />
+                                                        </div>
+                                                    </th>
                                                     <th className="p-5 font-black text-gray-500 uppercase text-xs tracking-wider">Identidad Visual</th>
                                                     <th className="p-5 font-black text-gray-500 uppercase text-xs tracking-wider">Modelo & Marca</th>
                                                     <th className="p-5 font-black text-gray-500 uppercase text-xs tracking-wider">Precio Mercado</th>
@@ -360,7 +410,17 @@ const Dashboard = () => {
                                             </thead>
                                             <tbody className="divide-y divide-gray-100">
                                                 {filteredProducts.map((p) => (
-                                                    <tr key={p._id} className="hover:bg-blue-50/50 transition duration-200">
+                                                    <tr key={p._id} className={`transition duration-200 ${selectedIds.includes(p._id) ? 'bg-blue-50/80 border-l-4 border-l-eo-primary' : 'hover:bg-blue-50/30 border-l-4 border-l-transparent'}`}>
+                                                        <td className="p-5">
+                                                            <div className="flex items-center justify-center">
+                                                                <input 
+                                                                    type="checkbox" 
+                                                                    className="w-5 h-5 rounded border-gray-300 text-eo-primary focus:ring-eo-primary cursor-pointer accent-eo-primary"
+                                                                    checked={selectedIds.includes(p._id)}
+                                                                    onChange={() => toggleSelect(p._id)}
+                                                                />
+                                                            </div>
+                                                        </td>
                                                         <td className="p-5">
                                                             <div className="w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center p-2 shadow-sm">
                                                                 {p.images?.[0] ? <img src={p.images[0]} className="w-full h-full object-contain" alt="lente"/> : <ImageIcon className="w-8 h-8 text-gray-300"/>}
