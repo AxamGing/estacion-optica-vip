@@ -6,7 +6,8 @@ const {
     createProduct,
     updateProduct,
     deleteProduct,
-    uploadImage
+    uploadImage,
+    seedProducts
 } = require('../controllers/productController')
 const { protect } = require('../middleware/auth')
 const { upload } = require('../config/cloudinary')
@@ -20,5 +21,6 @@ router.post('/', protect, createProduct)
 router.put('/:id', protect, updateProduct)
 router.delete('/:id', protect, deleteProduct)
 router.post('/upload-image', protect, upload.single('image'), uploadImage)
+router.post('/seed', protect, seedProducts)
 
 module.exports = router

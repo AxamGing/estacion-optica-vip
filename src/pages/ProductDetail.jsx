@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router-dom'
 import axios from 'axios'
 import Header from '../components/layout/Header'
 import Footer from '../components/layout/Footer'
-import { ArrowLeft, ChevronRight, CheckCircle, ShieldCheck, Truck, Tags, Search } from 'lucide-react'
+import { ArrowLeft, ChevronRight, CheckCircle, ShieldCheck, Truck, Tags, Search, Zap } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 const ProductDetail = () => {
     const { id } = useParams()
@@ -207,42 +208,73 @@ const ProductDetail = () => {
                         </div>
                     </div>
 
-                    {/* Recommended Products */}
+                    {/* Mejorada Sección de Recomendaciones Brutales */}
                     {recommended.length > 0 && (
-                        <div>
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-3xl font-extrabold text-eo-dark">También podría interesarte</h2>
-                                <Link to="/catalogo" className="text-eo-primary font-bold hover:underline hidden md:block">
-                                    Ver todo el catálogo
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }} 
+                            whileInView={{ opacity: 1, y: 0 }} 
+                            viewport={{ once: true }} 
+                            transition={{ duration: 0.6 }}
+                            className="mt-24 pt-12 border-t border-gray-100"
+                        >
+                            <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
+                                <div>
+                                    <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                                        <Zap className="text-eo-primary" size={32} /> 
+                                        Piezas Similares Premium
+                                    </h2>
+                                    <p className="text-gray-500 font-medium mt-2">Continuando en la misma línea de excelencia y estilo.</p>
+                                </div>
+                                <Link to="/catalogo" className="bg-white border-2 border-gray-200 text-gray-900 px-6 py-3 rounded-2xl font-black hover:border-eo-primary hover:text-eo-primary transition-all flex items-center gap-2 shadow-sm">
+                                    Explorar Colección <ArrowLeft className="rotate-180" size={20} />
                                 </Link>
                             </div>
                             
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <motion.div 
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true }}
+                                variants={{
+                                    visible: { transition: { staggerChildren: 0.1 } }
+                                }}
+                            >
                                 {recommended.map(rec => (
-                                    <Link key={rec._id} to={`/producto/${rec._id}`} className="bg-white rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300 group border border-gray-100 flex flex-col">
-                                        <div className="relative aspect-square bg-gray-50 flex items-center justify-center p-6">
-                                            {rec.images && rec.images[0] ? (
-                                                <img src={rec.images[0]} alt={rec.name} className="w-full h-full object-contain group-hover:scale-110 transition duration-500 drop-shadow-sm" />
-                                            ) : (
-                                                <span className="text-gray-300 text-xs font-bold uppercase tracking-widest">Sin foto</span>
-                                            )}
-                                            {rec.brand && (
-                                                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-[10px] font-bold text-eo-dark">
-                                                    {rec.brand}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="p-5 flex flex-col flex-grow">
-                                            <h3 className="font-bold text-eo-dark mb-1 group-hover:text-eo-primary transition">{rec.name}</h3>
-                                            <p className="text-xs text-gray-500 capitalize mb-3">{rec.category} • {rec.gender}</p>
-                                            <div className="mt-auto font-black text-lg text-eo-primary">
-                                                ${rec.price > 0 ? rec.price.toLocaleString() : 'Consultar'}
+                                    <motion.div 
+                                        key={rec._id} 
+                                        variants={{
+                                            hidden: { opacity: 0, scale: 0.9 },
+                                            visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 100 } }
+                                        }}
+                                    >
+                                        <Link to={`/producto/${rec._id}`} className="bg-white rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100 flex flex-col h-full transform hover:-translate-y-2">
+                                            <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-8 overflow-hidden">
+                                                {rec.images && rec.images[0] ? (
+                                                    <img src={rec.images[0]} alt={rec.name} className="w-full h-full object-contain group-hover:scale-110 transition duration-700 ease-out drop-shadow-xl" />
+                                                ) : (
+                                                    <span className="text-gray-300 text-xs font-bold uppercase tracking-widest">Contenido Restringido</span>
+                                                )}
+                                                {rec.brand && (
+                                                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-black tracking-widest uppercase text-gray-900 shadow-sm border border-gray-100/50">
+                                                        {rec.brand}
+                                                    </div>
+                                                )}
                                             </div>
-                                        </div>
-                                    </Link>
+                                            <div className="p-6 flex flex-col flex-grow bg-white border-t border-gray-50 relative">
+                                                <div className="absolute -top-6 right-6 bg-eo-dark text-white w-12 h-12 flex items-center justify-center rounded-full shadow-xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                                    <Search size={20} />
+                                                </div>
+                                                <h3 className="font-black text-gray-900 text-xl mb-1 group-hover:text-eo-primary transition-colors">{rec.name}</h3>
+                                                <p className="text-sm font-semibold text-gray-400 capitalize tracking-wide mb-4">{rec.category} • {rec.gender}</p>
+                                                <div className="mt-auto font-black text-2xl text-eo-primary">
+                                                    ${rec.price > 0 ? rec.price.toLocaleString() : 'ConSultar'}
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    </motion.div>
                                 ))}
-                            </div>
-                        </div>
+                            </motion.div>
+                        </motion.div>
                     )}
                 </div>
             </main>

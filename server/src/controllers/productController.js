@@ -1,4 +1,5 @@
 const Product = require('../models/Product')
+const palazzoProducts = require('../utils/seedData')
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -116,11 +117,24 @@ const uploadImage = async (req, res) => {
     }
 }
 
+// @desc    Seed products (Palazzo Catalog)
+// @route   POST /api/products/seed
+// @access  Private (Admin)
+const seedProducts = async (req, res) => {
+    try {
+        const result = await Product.insertMany(palazzoProducts)
+        res.status(201).json({ message: `¡Semilla inyectada! ${result.length} modelos de Palazzo agregados.`, count: result.length })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
     createProduct,
     updateProduct,
     deleteProduct,
-    uploadImage
+    uploadImage,
+    seedProducts
 }
