@@ -13,6 +13,11 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px; /* account for sticky header height */
+  }
+
   body {
     @apply font-inter text-eo-dark bg-eo-light;
   }

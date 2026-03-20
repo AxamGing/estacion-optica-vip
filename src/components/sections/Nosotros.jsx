@@ -16,7 +16,7 @@ const features = [
     {
         icon: ShieldCheck,
         title: 'Garantía Asegurada',
-        description: 'Cada uno de nuestros productos cuenta con el respaldo de calidad Isaron.',
+        description: 'Garantizamos la calidad y durabilidad de cada montura con atención personalizada incluida.',
     },
 ]
 
