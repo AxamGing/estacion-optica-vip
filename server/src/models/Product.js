@@ -20,23 +20,48 @@ const productSchema = new mongoose.Schema({
         enum: ['hombre', 'mujer', 'unisex', 'ninos'],
         default: 'unisex'
     },
-    price: {
-        type: Number,
-        default: 0,
-        min: 0
-    },
     description: {
         type: String,
         trim: true
     },
+    // Material and frame shape — quick fields
+    material: {
+        type: String,
+        trim: true
+    },
+    frameShape: {
+        type: String,
+        trim: true
+        // e.g.: "Rectangular", "Redondo", "Aviador", "Cat-Eye", "Cuadrado"
+    },
+    // Colors array — basic name + hex
     colors: [{
-        name: String,   // i.e., "Marrón Carey"
-        hex: String     // i.e., "#8b4513"
+        name: String,   // e.g., "Marrón Carey"
+        hex: String     // e.g., "#8b4513"
     }],
+    // General images (fallback / main gallery)
     images: [{
         type: String  // URL from Cloudinary
     }],
-    stock: {
+    // Color-specific image galleries
+    colorImages: [{
+        colorName: { type: String },
+        colorHex:  { type: String, default: '#000000' },
+        images:    [{ type: String }]  // array of Cloudinary URLs
+    }],
+    // Key-value specifications table
+    // e.g. { "Material": "Acetato", "Largo del brazo": "140mm" }
+    specifications: {
+        type: Map,
+        of: String
+    },
+    // Tags for filtering and highlighting
+    tags: [{
+        type: String,
+        enum: ['nuevo', 'tendencia', 'premium', 'oferta', 'exclusivo', 'limitado']
+    }],
+    // View counter — incremented every time the detail page is accessed
+    views: {
         type: Number,
         default: 0,
         min: 0

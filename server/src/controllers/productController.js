@@ -1,47 +1,78 @@
 const Product = require('../models/Product')
 const palazzoProducts = require('../utils/seedData')
 
-// @desc    Get all products
+// @desc    Get all products with filtering and sorting
 // @route   GET /api/products
 // @access  Public
 const getProducts = async (req, res) => {
     try {
-        const { category, featured, gender, search, minPrice, maxPrice } = req.query
+        const { category, featured, gender, search, brand, sort } = req.query
         const filter = {}
 
         if (category) filter.category = category
         if (gender) filter.gender = gender
         if (featured) filter.featured = featured === 'true'
+        if (brand) filter.brand = brand
 
-        // Price Filter
-        if (minPrice || maxPrice) {
-            filter.price = {}
-            if (minPrice) filter.price.$gte = Number(minPrice)
-            if (maxPrice) filter.price.$lte = Number(maxPrice)
-        }
-
-        // Search Filter (Name or Description)
+        // Search Filter (Name, Brand or Description)
         if (search) {
             const searchRegex = new RegExp(search, 'i')
             filter.$or = [
                 { name: searchRegex },
-                { description: searchRegex }
+                { description: searchRegex },
+                { brand: searchRegex }
             ]
         }
 
-        const products = await Product.find(filter).sort({ createdAt: -1 })
+        // Sorting
+        let sortOption = { createdAt: -1 } // default: newest
+        if (sort === 'views')      sortOption = { views: -1 }
+        if (sort === 'name_asc')   sortOption = { name: 1 }
+        if (sort === 'name_desc')  sortOption = { name: -1 }
+
+        const products = await Product.find(filter).sort(sortOption)
         res.json(products)
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
 }
 
-// @desc    Get single product
+// @desc    Get trending products (most viewed)
+// @route   GET /api/products/trending
+// @access  Public
+const getTrendingProducts = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 8
+        const products = await Product.find({}).sort({ views: -1 }).limit(limit)
+        res.json(products)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
+// @desc    Get unique brands list
+// @route   GET /api/products/brands
+// @access  Public
+const getBrands = async (req, res) => {
+    try {
+        const brands = await Product.distinct('brand', { brand: { $ne: null, $ne: '' } })
+        res.json(brands.filter(Boolean).sort())
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
+// @desc    Get single product (also increments view count)
 // @route   GET /api/products/:id
 // @access  Public
 const getProductById = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id)
+        // Increment views atomically and return updated doc
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { views: 1 } },
+            { new: true }
+        )
 
         if (!product) {
             return res.status(404).json({ message: 'Producto no encontrado' })
@@ -103,7 +134,7 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-// @desc    Upload product image
+// @desc    Upload product image (single)
 // @route   POST /api/products/upload-image
 // @access  Private (Admin)
 const uploadImage = async (req, res) => {
@@ -138,7 +169,6 @@ const bulkDeleteProducts = async (req, res) => {
         if (!ids || !Array.isArray(ids) || ids.length === 0) {
             return res.status(400).json({ message: 'No se proporcionaron IDs válidos para eliminar.' });
         }
-        
         await Product.deleteMany({ _id: { $in: ids } });
         res.json({ message: `${ids.length} productos eliminados correctamente.` });
     } catch (error) {
@@ -146,13 +176,41 @@ const bulkDeleteProducts = async (req, res) => {
     }
 }
 
+// @desc    Delete ALL products
+// @route   DELETE /api/products/all
+// @access  Private (Admin)
+const deleteAllProducts = async (req, res) => {
+    try {
+        const result = await Product.deleteMany({});
+        res.json({ message: `Catálogo completo eliminado. ${result.deletedCount} productos borrados.` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// @desc    Reset all product view counts to 0
+// @route   POST /api/products/reset-views
+// @access  Private (Admin)
+const resetAllViews = async (req, res) => {
+    try {
+        await Product.updateMany({}, { $set: { views: 0 } });
+        res.json({ message: 'Contador de vistas reiniciado para todos los productos.' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getProducts,
+    getTrendingProducts,
+    getBrands,
     getProductById,
     createProduct,
     updateProduct,
     deleteProduct,
     uploadImage,
     seedProducts,
-    bulkDeleteProducts
+    bulkDeleteProducts,
+    deleteAllProducts,
+    resetAllViews
 }
