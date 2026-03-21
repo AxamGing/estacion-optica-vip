@@ -43,6 +43,8 @@ const Dashboard = () => {
     const [colorInput, setColorInput] = useState({ name: '', hex: '#3b82f6' });
     const [specInput, setSpecInput] = useState({ key: '', value: '' });
     const [activeColorImg, setActiveColorImg] = useState(null);
+    const [draggingGeneral, setDraggingGeneral] = useState(false);
+    const [draggingColorIdx, setDraggingColorIdx] = useState(null);
 
     useEffect(() => {
         if (!localStorage.getItem('token')) { navigate('/admin'); return; }
@@ -102,6 +104,15 @@ const Dashboard = () => {
         setForm(prev => ({ ...prev, selectedFiles: [...prev.selectedFiles, ...files], previewImages: [...prev.previewImages, ...previews] }));
     };
 
+    const handleGeneralDrop = (e) => {
+        e.preventDefault();
+        setDraggingGeneral(false);
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        if (!files.length) return;
+        const previews = files.map(f => URL.createObjectURL(f));
+        setForm(prev => ({ ...prev, selectedFiles: [...prev.selectedFiles, ...files], previewImages: [...prev.previewImages, ...previews] }));
+    };
+
     const removeImage = (idx) => setForm(prev => ({ ...prev, previewImages: prev.previewImages.filter((_, i) => i !== idx), selectedFiles: prev.selectedFiles.filter((_, i) => i !== idx) }));
 
     const addColor = () => {
@@ -122,6 +133,33 @@ const Dashboard = () => {
             ci[colorIdx] = { ...ci[colorIdx], images: [...(ci[colorIdx].images || []), ...previews], selectedFiles: [...(ci[colorIdx].selectedFiles || []), ...files] };
             return { ...prev, colorImages: ci };
         });
+    };
+
+    const handleColorDrop = (colorIdx, e) => {
+        e.preventDefault();
+        setDraggingColorIdx(null);
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        if (!files.length) return;
+        const previews = files.map(f => URL.createObjectURL(f));
+        setForm(prev => {
+            const ci = [...prev.colorImages];
+            ci[colorIdx] = { ...ci[colorIdx], images: [...(ci[colorIdx].images || []), ...previews], selectedFiles: [...(ci[colorIdx].selectedFiles || []), ...files] };
+            return { ...prev, colorImages: ci };
+        });
+    };
+
+    const pickColor = async () => {
+        if (!window.EyeDropper) {
+            toast.warning('Tu navegador no soporta el cuentagotas nativo. Usa el selector manual.');
+            return;
+        }
+        try {
+            const eyeDropper = new window.EyeDropper();
+            const result = await eyeDropper.open();
+            setColorInput(p => ({ ...p, hex: result.sRGBHex }));
+        } catch (e) {
+            // User canceled eyedropper
+        }
     };
 
     const removeColorImage = (colorIdx, imgIdx) => setForm(prev => {
@@ -542,20 +580,22 @@ const Dashboard = () => {
                                     <div className="space-y-6">
                                         {/* General Images */}
                                         <div>
-                                            <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><ImageIcon size={14} /> Fotos Generales (hasta 5)</label>
-                                            <div className={`grid gap-3 ${form.previewImages.length > 0 ? 'grid-cols-3' : 'grid-cols-1'}`}>
+                                            <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2"><ImageIcon size={14} /> Fotos Generales</label>
+                                            <div className="grid gap-3 grid-cols-3">
                                                 {form.previewImages.map((img, i) => (
                                                     <div key={i} className="relative aspect-square rounded-2xl overflow-hidden border border-gray-200 group">
                                                         <img src={img} className="w-full h-full object-contain bg-gray-50" alt="" />
                                                         <button type="button" onClick={() => removeImage(i)} className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><X size={12} /></button>
                                                     </div>
                                                 ))}
-                                                {form.previewImages.length < 5 && (
-                                                    <label className="aspect-square rounded-2xl border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50/30 transition flex flex-col items-center justify-center cursor-pointer text-gray-400 hover:text-blue-500">
-                                                        <Plus size={24} /><span className="text-xs font-bold mt-1">Añadir</span>
-                                                        <input type="file" onChange={handleFilesSelect} accept="image/*" multiple className="hidden" />
-                                                    </label>
-                                                )}
+                                                <label 
+                                                    onDragOver={(e) => { e.preventDefault(); setDraggingGeneral(true); }}
+                                                    onDragLeave={() => setDraggingGeneral(false)}
+                                                    onDrop={handleGeneralDrop}
+                                                    className={`aspect-square rounded-2xl border-2 border-dashed transition flex flex-col items-center justify-center cursor-pointer ${draggingGeneral ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50/30 text-gray-400 hover:text-blue-500'}`}>
+                                                    <Plus size={24} /><span className="text-xs font-bold mt-1 text-center px-2">Añadir o<br/>Soltar</span>
+                                                    <input type="file" onChange={handleFilesSelect} accept="image/*" multiple className="hidden" />
+                                                </label>
                                             </div>
                                         </div>
 
@@ -573,6 +613,7 @@ const Dashboard = () => {
                                                 {form.colors.length === 0 && <span className="text-xs text-gray-400 bg-white px-3 py-2 rounded-xl border border-gray-100">Sin colores aún</span>}
                                             </div>
                                             <div className="flex gap-2 bg-white p-2 rounded-xl border border-gray-200">
+                                                <button type="button" onClick={pickColor} title="Cuentagotas (Seleccionar de foto)" className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition"><Palette size={16} /></button>
                                                 <input type="color" value={colorInput.hex} onChange={e => setColorInput(p => ({ ...p, hex: e.target.value }))} className="w-10 h-10 rounded-lg border-none cursor-pointer p-0" />
                                                 <input type="text" placeholder="Nombre del color..." value={colorInput.name} onChange={e => setColorInput(p => ({ ...p, name: e.target.value }))} className="flex-1 text-sm font-bold bg-transparent outline-none px-2" />
                                                 <button type="button" onClick={addColor} className="bg-gray-900 text-white text-sm font-black px-4 rounded-lg hover:bg-blue-600 transition">+</button>
@@ -592,15 +633,19 @@ const Dashboard = () => {
                                                 </div>
                                                 {activeColorImg !== null && form.colorImages[activeColorImg] && (
                                                     <div>
-                                                        <div className={`grid gap-2 ${form.colorImages[activeColorImg].images.length > 0 ? 'grid-cols-3' : 'grid-cols-1'}`}>
+                                                        <div className="grid gap-2 grid-cols-3">
                                                             {form.colorImages[activeColorImg].images.map((img, i) => (
                                                                 <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 group">
                                                                     <img src={img} className="w-full h-full object-contain bg-white" alt="" />
                                                                     <button type="button" onClick={() => removeColorImage(activeColorImg, i)} className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><X size={10} /></button>
                                                                 </div>
                                                             ))}
-                                                            <label className="aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50/30 transition flex flex-col items-center justify-center cursor-pointer text-gray-400">
-                                                                <Plus size={20} /><span className="text-xs font-bold mt-0.5">Añadir</span>
+                                                            <label 
+                                                                onDragOver={(e) => { e.preventDefault(); setDraggingColorIdx(activeColorImg); }}
+                                                                onDragLeave={() => setDraggingColorIdx(null)}
+                                                                onDrop={(e) => handleColorDrop(activeColorImg, e)}
+                                                                className={`aspect-square rounded-xl border-2 border-dashed transition flex flex-col items-center justify-center cursor-pointer ${draggingColorIdx === activeColorImg ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50/30 text-gray-400'}`}>
+                                                                <Plus size={20} /><span className="text-[10px] font-bold mt-0.5 text-center px-1 leading-tight">Añadir o<br/>Soltar</span>
                                                                 <input type="file" onChange={(e) => handleColorFiles(activeColorImg, e)} accept="image/*" multiple className="hidden" />
                                                             </label>
                                                         </div>
@@ -624,7 +669,7 @@ const Dashboard = () => {
                                             <div>
                                                 <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Categoría *</label>
                                                 <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 px-4 py-3 rounded-2xl font-bold outline-none transition text-sm appearance-none">
-                                                    <option value="monturas">Montura Óptica</option>
+                                                    <option value="monturas">Montura</option>
                                                     <option value="lentes">Lente Solar</option>
                                                     <option value="accesorios">Accesorio</option>
                                                 </select>
